@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#101827">
+<title>KRN AI Airdrop Hunter</title>
+<style>
+:root{--bg:#0b1220;--panel:#121d30;--panel2:#18263d;--text:#edf4ff;--muted:#9fb0c8;--line:#2b3b55;--blue:#58b7ff;--green:#5ed6a0;--yellow:#ffd166;--red:#ff7777}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(160deg,#0b1220,#101c31);color:var(--text);font:15px system-ui,-apple-system,Segoe UI,sans-serif}
+.wrap{max-width:1050px;margin:auto;padding:18px}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px}.logo{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,#36a8ff,#765cff);display:grid;place-items:center;font-weight:900;font-size:20px;color:white}
+h1{font-size:21px;margin:0}.sub{color:var(--muted);font-size:12px;margin-top:3px}
+.pill{border:1px solid #28634f;color:var(--green);padding:7px 10px;border-radius:30px;font-size:12px}
+.hero{margin:20px 0;padding:20px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(120deg,#172a46,#142039)}
+.hero h2{font-size:25px;margin:0 0 8px}.hero p{color:var(--muted);margin:0;line-height:1.5}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}.stat,.card,.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px}.stat b{font-size:23px;display:block}.stat span{font-size:12px;color:var(--muted)}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}.toolbar input,.toolbar select,.form input,.form select{background:#0c1728;border:1px solid var(--line);color:var(--text);border-radius:10px;padding:11px;min-width:0}
+.toolbar input{flex:1;min-width:150px}.toolbar select{flex:1}
+button{border:0;border-radius:10px;padding:10px 13px;background:#238bd1;color:white;font-weight:700;cursor:pointer}
+button.secondary{background:#263953;color:var(--text);border:1px solid var(--line)}button.warn{background:#6b4b19;color:#ffe2a0}button:disabled{opacity:.5}
+h3{margin:20px 0 10px;font-size:17px}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.card h4{margin:0 0 6px;font-size:17px}.meta{color:var(--muted);font-size:12px}.desc{color:#d2deef;line-height:1.45;font-size:13px;margin:10px 0}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin:9px 0}.tag{font-size:11px;padding:5px 8px;border-radius:20px;background:#20334d;color:#cfe5ff}.risk-low{color:var(--green)}.risk-med{color:var(--yellow)}.risk-high{color:var(--red)}
+.cardfoot{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin-top:12px}
+.empty{padding:25px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:14px}
+.notice{font-size:12px;color:var(--muted);line-height:1.5;background:#111d30;border-left:3px solid var(--yellow);padding:12px;border-radius:8px;margin:15px 0}
+.task{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);font-size:13px}
+.task:last-child{border:0}.task small{display:block;color:var(--muted);margin-top:3px}
+.form{display:grid;grid-template-columns:1fr 1fr;gap:8px}.form input,.form select{width:100%}
+footer{padding:25px 0;color:var(--muted);font-size:11px;text-align:center}
+@media(max-width:650px){.grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(3,1fr)}.stat{padding:10px}.stat b{font-size:19px}.hero h2{font-size:22px}.wrap{padding:13px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+ <div class="brand"><div class="logo">KRN</div><div><h1>AI Airdrop Hunter</h1><div class="sub">TON + Multi-chain · Prototipe Tahap 1</div></div></div>
+ <span class="pill">● PROTOTIPE LOKAL</span>
+</header>
+<section class="hero">
+ <h2>Temukan peluang. Periksa risiko. Klaim dengan sadar.</h2>
+ <p>Dashboard pemantauan airdrop untuk membantu mencatat proyek, tugas, dan status klaim. Data contoh ditandai dengan jelas dan bukan rekomendasi investasi.</p>
+</section>
+<section class="stats">
+ <div class="stat"><b id="countProjects">0</b><span>Proyek tersimpan</span></div>
+ <div class="stat"><b id="countTasks">0</b><span>Tugas terbuka</span></div>
+ <div class="stat"><b id="countApproved">0</b><span>Persetujuan lokal</span></div>
+</section>
+<div class="notice"><b>Mode aman:</b> aplikasi ini tidak meminta seed phrase/private key, tidak terhubung ke wallet, tidak menandatangani transaksi, dan tidak mengirim klaim. Tombol persetujuan hanya mengubah catatan di perangkat ini.</div>
+
+<h3>Daftar peluang airdrop</h3>
+<div class="toolbar">
+ <input id="search" placeholder="Cari nama proyek atau jaringan..." aria-label="Cari proyek">
+ <select id="network"><option value="Semua">Semua jaringan</option><option>TON</option><option>Ethereum</option><option>Arbitrum</option><option>Optimism</option><option>Base</option><option>Solana</option><option>Multi-chain</option></select>
+ <select id="status"><option value="Semua">Semua status</option><option>Perlu diperiksa</option><option>Dipantau</option><option>Siap ditinjau</option><option>Ditutup</option></select>
+</div>
+<div id="projectList" class="grid"></div>
+
+<h3>Tambah proyek sendiri</h3>
+<section class="panel">
+ <form id="addForm" class="form">
+  <input id="newName" placeholder="Nama proyek" required maxlength="50">
+  <select id="newNetwork"><option>TON</option><option>Ethereum</option><option>Arbitrum</option><option>Optimism</option><option>Base</option><option>Solana</option><option>Multi-chain</option></select>
+  <select id="newRisk"><option value="Perlu verifikasi">Perlu verifikasi</option><option value="Risiko belum diketahui">Risiko belum diketahui</option><option value="Risiko tinggi">Risiko tinggi</option></select>
+  <input id="newUrl" placeholder="URL resmi (https://...)" type="url">
+  <button type="submit">Tambah ke daftar</button>
+ </form>
+ <p class="meta">Tambahkan hanya proyek yang sudah Anda temukan. Periksa domain resmi secara mandiri sebelum membuka tautan.</p>
+</section>
+
+<h3>Tugas & persetujuan klaim</h3>
+<section class="panel">
+ <div id="taskList"></div>
+ <div class="notice">Sebelum klaim sungguhan: periksa domain, kontrak, jaringan, biaya gas, dan izin transaksi. Jangan pernah memasukkan seed phrase ke situs airdrop.</div>
+ <button class="secondary" id="exportBtn">Ekspor data JSON</button>
+ <button class="secondary" id="resetBtn">Reset data contoh</button>
+</section>
+<footer>KRN AI Airdrop Hunter · Tahap 1 · Data tersimpan di browser perangkat ini. Belum ada pemindaian internet otomatis atau koneksi blockchain.</footer>
+</div>
+<script>
+const seed = [
+ {id:1,name:"Contoh TON Community",network:"TON",risk:"Perlu verifikasi",status:"Perlu diperiksa",desc:"Data demonstrasi. Bukan pengumuman airdrop aktif. Periksa kanal dan situs resmi proyek.",url:"",tasks:["Periksa pengumuman resmi","Periksa syarat kelayakan wallet"]},
+ {id:2,name:"Contoh EVM Ecosystem",network:"Base",risk:"Risiko belum diketahui",status:"Dipantau",desc:"Data demonstrasi multi-chain. Jangan menghubungkan wallet sebelum memverifikasi domain dan izin.",url:"",tasks:["Baca dokumentasi resmi","Periksa jaringan dan biaya transaksi"]},
+ {id:3,name:"Contoh Solana Campaign",network:"Solana",risk:"Perlu verifikasi",status:"Perlu diperiksa",desc:"Data demonstrasi untuk latihan pencatatan. Tidak ada reward yang dijanjikan.",url:"",tasks:["Periksa tanggal kampanye","Pastikan tugas tidak meminta pembayaran mencurigakan"]}
+];
+const defaultTasks = [
+ {id:101,project:"Contoh TON Community",title:"Periksa kanal resmi dan tanggal kampanye",done:false},
+ {id:102,project:"Contoh EVM Ecosystem",title:"Periksa domain dan jaringan",done:false},
+ {id:103,project:"Contoh Solana Campaign",title:"Periksa persyaratan wallet",done:false}
+];
+let projects, tasks, approvals;
+const load = () => {
+ try { projects=JSON.parse(localStorage.getItem("krn_projects")) || structuredClone(seed); } catch(e){projects=structuredClone(seed)}
+ try { tasks=JSON.parse(localStorage.getItem("krn_tasks")) || structuredClone(defaultTasks); } catch(e){tasks=structuredClone(defaultTasks)}
+ try { approvals=JSON.parse(localStorage.getItem("krn_approvals")) || []; } catch(e){approvals=[]}
+};
+const save=()=>{localStorage.setItem("krn_projects",JSON.stringify(projects));localStorage.setItem("krn_tasks",JSON.stringify(tasks));localStorage.setItem("krn_approvals",JSON.stringify(approvals));render()};
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function render(){
+ document.getElementById("countProjects").textContent=projects.length;
+ document.getElementById("countTasks").textContent=tasks.filter(t=>!t.done).length;
+ document.getElementById("countApproved").textContent=approvals.length;
+ const q=document.getElementById("search").value.toLowerCase(), n=document.getElementById("network").value, st=document.getElementById("status").value;
+ const shown=projects.filter(p=>(n==="Semua"||p.network===n)&&(st==="Semua"||p.status===st)&&(p.name+" "+p.network).toLowerCase().includes(q));
+ document.getElementById("projectList").innerHTML=shown.length?shown.map(p=>{
+  const riskClass=p.risk==="Risiko tinggi"?"risk-high":p.risk==="Perlu verifikasi"?"risk-med":"risk-med";
+  const safeUrl=p.url && /^https:\/\/[a-z0-9.-]+(?::\d+)?(?:\/.*)?$/i.test(p.url)?p.url:"";
+  return `<article class="card"><h4>${esc(p.name)}</h4><div class="meta">${esc(p.network)} · ID ${p.id}</div><div class="tags"><span class="tag">${esc(p.status)}</span><span class="tag ${riskClass}">${esc(p.risk)}</span><span class="tag">DATA: BELUM DIVERIFIKASI</span></div><p class="desc">${esc(p.desc||"Proyek ditambahkan pengguna. Periksa sumber resmi.")}</p><div class="cardfoot"><select aria-label="Ubah status" onchange="changeStatus(${p.id},this.value)"><option ${p.status==="Perlu diperiksa"?"selected":""}>Perlu diperiksa</option><option ${p.status==="Dipantau"?"selected":""}>Dipantau</option><option ${p.status==="Siap ditinjau"?"selected":""}>Siap ditinjau</option><option ${p.status==="Ditutup"?"selected":""}>Ditutup</option></select>${safeUrl?`<a href="${esc(safeUrl)}" target="_blank" rel="noopener noreferrer" style="color:#78c7ff;font-size:12px">Buka situs ↗</a>`:"<span class='meta'>Belum ada URL</span>"}</div><div class="cardfoot"><button class="warn" onclick="approve(${p.id})">Tinjau & setujui klaim</button><button class="secondary" onclick="addTask(${p.id})">+ Tugas</button></div></article>`;
+ }).join(""):'<div class="empty">Tidak ada proyek yang cocok.</div>';
+ document.getElementById("taskList").innerHTML=tasks.length?tasks.map(t=>`<div class="task"><label><input type="checkbox" ${t.done?"checked":""} onchange="toggleTask(${t.id},this.checked)"> ${esc(t.title)}<small>${esc(t.project)}</small></label><button class="secondary" onclick="removeTask(${t.id})">Hapus</button></div>`).join(""):'<div class="empty">Belum ada tugas.</div>';
+}
+window.changeStatus=(id,value)=>{const p=projects.find(x=>x.id===id);if(p){p.status=value;save()}};
+window.approve=(id)=>{const p=projects.find(x=>x.id===id);if(!p)return; if(!confirm("Ini hanya persetujuan pencatatan lokal. Belum ada transaksi atau klaim token. Sudah memeriksa situs resmi, syarat, jaringan, dan biaya?"))return;approvals.push({project:p.name,time:new Date().toISOString(),note:"Persetujuan lokal; tidak ada transaksi dikirim"});save();alert("Persetujuan lokal dicatat. Tidak ada token yang diklaim.")};
+window.addTask=(id)=>{const p=projects.find(x=>x.id===id);if(!p)return;const title=prompt("Masukkan tugas untuk "+p.name);if(title&&title.trim()){tasks.push({id:Date.now(),project:p.name,title:title.trim(),done:false});save()}};
+window.toggleTask=(id,done)=>{const t=tasks.find(x=>x.id===id);if(t){t.done=done;save()}};
+window.removeTask=(id)=>{tasks=tasks.filter(x=>x.id!==id);save()};
+document.getElementById("search").addEventListener("input",render);
+document.getElementById("network").addEventListener("change",render);
+document.getElementById("status").addEventListener("change",render);
+document.getElementById("addForm").addEventListener("submit",e=>{
+ e.preventDefault();const name=document.getElementById("newName").value.trim(),url=document.getElementById("newUrl").value.trim();
+ if(url && !url.startsWith("https://")){alert("Gunakan URL HTTPS. Tetap verifikasi domain secara mandiri.");return}
+ projects.unshift({id:Date.now(),name,network:document.getElementById("newNetwork").value,risk:document.getElementById("newRisk").value,status:"Perlu diperiksa",desc:"Ditambahkan manual oleh pengguna. Status dan reward belum diverifikasi.",url,tasks:[]});e.target.reset();save();
+});
+document.getElementById("exportBtn").addEventListener("click",()=>{
+ const blob=new Blob([JSON.stringify({projects,tasks,approvals,exportedAt:new Date().toISOString()},null,2)],{type:"application/json"}),a=document.createElement("a"),u=URL.createObjectURL(blob);a.href=u;a.download="krn-airdrop-data.json";a.click();URL.revokeObjectURL(u);
+});
+document.getElementById("resetBtn").addEventListener("click",()=>{if(confirm("Hapus data lokal dan kembali ke data contoh?")){projects=structuredClone(seed);tasks=structuredClone(defaultTasks);approvals=[];save()}});
+load();render();
+</script>
+</body>
+</html>
